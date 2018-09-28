@@ -1,0 +1,92 @@
+<extend name="Public:base"/>
+
+<block name="body">
+    <style type="text/css">
+
+        #body {
+            width: 95%;
+            background: white;
+            border-radius: 10px;
+            margin: 2.5%;
+            position: relative;
+        }
+        .btn-default {
+            color: #fff;
+            background-image: none;
+            background-color: rgba(255, 150, 47, 1);
+            border: none;
+        }
+        .btn-default:focus, .btn-default:hover {
+            color: #fff;
+            background-image: none;
+            border: none;
+            background-color: rgba(255, 150, 47, 1);
+        }
+    </style>
+
+    <div id="body">
+        <volist name="res" id="vo">
+            <div style="width: 100%;height: 60px;background: #fff2e5;overflow: hidden;">
+                <div style="margin: 20px;color: #ff6600">{$vo.title}</div>
+            </div>
+            <br/>
+            <ul>
+                <volist name="vo.two" id="is">
+                    <li style="float: left;list-style: none;margin: -5px 50px;">
+                        <php>
+                            echo $is['type']?'<label><input name="Fruit" type="checkbox" checked value="'.$is['id'].'"/> '.$is['title'].'</label>':'<label><input name="Fruit" type="checkbox" value="'.$is['id'].'"/> '.$is['title'].'</label>'
+                        </php>
+                    </li>
+                </volist>
+            </ul>
+            <br/>
+        </volist>
+
+        <div style="width: 100%;height: 60px;background: #f9fafc;overflow: hidden;margin: 60px auto;border: solid #e4e4e4 1px">
+            <div style="margin-top: 20px">
+                <p style="text-align: center"> <label><input id="all" type="checkbox" value=""/>全选</label></p>
+            </div>
+        </div>
+        <p style="text-align: center;">
+            <button style="width: 80px;height: 40px;" type="button" id="edit" data-target="#myModal" class="btn btn-default add_button ">保存</button>
+        </p>
+        <div style="height: 60px;width: 100%"></div>
+    </div>
+
+
+    <script>
+        $("#all").click(function(){
+            if(this.checked){
+                $("ul :checkbox").prop("checked", true);
+            }else{
+                $("ul :checkbox").prop("checked", false);
+            }
+        });
+        $("#edit").click(function(){
+            var arr = Array();
+                $("ul :checkbox").each(function(i){
+                    if(this.checked){
+                        arr[i] = $(this).val();
+                    }
+            });
+            var str = arr.join(',');//转换为逗号隔开的字符串
+            $.post('group',{str:str,id:'{$id}'},function (res) {
+                if(res.code){
+                    bootbox.alert({
+                        title:'系统提示',
+                        message:res.msg
+                    }) ;
+                    setTimeout(function () {
+                        window.location.reload()
+                    },2000)
+                }else {
+                    bootbox.alert({
+                        title:'系统提示',
+                        message:res.msg
+                    })
+                }
+            })
+        });
+    </script>
+
+</block>

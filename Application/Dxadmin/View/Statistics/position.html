@@ -1,0 +1,232 @@
+<extend name="Public:base"/>
+<block name="body">
+    <style type="text/css">
+    </style>
+    <ul class="nav nav-tabs nav-justified" style="width:500px;margin: 50px; ">
+        <li role="presentation"><a href="index.html">总览</a></li>
+        <li role="presentation" class="active"><a href="#">区域分析</a></li>
+        <li role="presentation"><a href="phone.html">手机型号</a></li>
+    </ul>
+
+    <div style="width: 60%;background: white;border-radius: 10px;position: relative;left:2.5%;float:left;">
+        <div style="height: 20px;"></div>
+        <ul class="nav nav-pills" style="margin-left: 30px;">
+            <li onclick="charts(this,0)" role="presentation" class="active"><a href="#">今日</a></li>
+            <li onclick="charts(this,1)" role="presentation"><a href="#">昨日</a></li>
+            <li onclick="charts(this,2)" role="presentation"><a href="#">最近7天</a></li>
+            <li onclick="charts(this,3)" role="presentation"><a href="#">最近30天</a></li>
+        </ul>
+        <div style="width: 120px;position: absolute; right:25%;top: 20px;">
+            <select id="is_code" class="form-control">
+                <option value="0">所有项目</option>
+                <option value="1">个人微信</option>
+                <option value="2">微信群</option>
+            </select>
+        </div>
+        <div style="width: 120px;position: absolute; right: 10%;top: 20px;">
+            <select id="code_one" class="form-control" style="display:none">
+                <option value="0">所有活码</option>
+                <volist name="code.one" id="vo">
+                    <option value="{$vo.id}">{$vo.name}</option>
+                </volist>
+            </select>
+            <select id="code_ones" class="form-control" style="display:none">
+                <option value="0">所有活码</option>
+                <volist name="code.ones" id="vo">
+                    <option value="{$vo.id}">{$vo.name}</option>
+                </volist>
+            </select>
+        </div>
+        <div id="ECharts" style="width: 95%;height: 600px;margin: 2.5%;"></div>
+    </div>
+    <div style="width: 35%;background: white;border-radius: 10px;position: relative;float:left;left:3%;">
+        <div class="row" style="margin:20px auto;width: 97%">
+            <div class="col-xs-12">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th style="width: 25%;text-align: center">时间</th>
+                        <th style="width: 25%;text-align: center">扫码人数</th>
+                        <th style="width: 25%;text-align: center">长按识别人数</th>
+                        <th style="width: 25%;text-align: center">流失人数</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+                <!-- PAGE CONTENT ENDS -->
+            </div><!-- /.col -->
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $("#is_code").change(function(){
+            key=$(this).val();
+            if(key === '1'){
+                $('#code_ones').css('display','none');
+                $('#code_one').css('display','block');
+                $.post('position',{code:key},function (res) {
+                    display(res);
+                })
+            }else if(key === '2'){
+                $('#code_one').css('display','none');
+                $('#code_ones').css('display','block');
+                $.post('position',{code:key},function (res) {
+                    display(res);
+                })
+            }else {
+                $('#code_one').css('display','none');
+                $('#code_ones').css('display','none');
+                $.post('position',{kong:1}, function (res) {
+                    display(res);
+                })
+            }
+        });
+        $("#code_one").change(function(){
+            id=$(this).val();
+            key=$("#is_code").val();
+            if(id === '0'){
+                $.post('position',{code:key},function (res) {
+                    display(res);
+                })
+            }else {
+                $.post('position',{id:id,type:key},function (res) {
+                    display(res);
+                })
+            }
+        });
+        var myChart = echarts.init(document.getElementById('ECharts'));
+        option = {
+            color: ['#FF8F21', '#1ECC85', '#BCBCBC'],
+            title: {
+                text: ''
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['扫码人数', '识别人数', '流失人数']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: ''
+            },
+            yAxis: {
+                type: 'value',
+                axisLine: {
+                    show: false,
+                    lineStyle: {
+                        width: 1,
+                        type: "solid"
+                    },
+                },
+            },
+            series: [
+
+                {
+                    name: '扫码人数',
+                    type: 'bar',
+                    data: '',
+                    symbolSize: 10,
+                    lineStyle: {
+                        width: 5 //default value:2
+                    }
+                },
+                {
+                    name: '识别人数',
+                    type: 'bar',
+                    data: '',
+                    symbolSize: 10,
+                    lineStyle: {
+                        width: 5 //default value:2
+                    }
+                },
+                {
+                    name: '流失人数',
+                    type: 'bar',
+                    data: '',
+                    symbolSize: 10,
+                    lineStyle: {
+                        width: 5 //default value:2
+                    }
+                }
+            ]
+        };
+        function display(res){
+            option.title.text = res.data.title;
+            option.xAxis.data = res.position.time;
+            option.series[0].data = res.position.sao;
+            option.series[1].data = res.position.on;
+            option.series[2].data = res.position.off;
+            $("tbody tr").remove();
+            for (i = 0; i < res.data.time.length; i++) {
+                if (res.data.sao[i] === undefined) {
+                    res.data.sao[i] = '';
+                }
+                if (res.data.on[i] === undefined) {
+                    res.data.on[i] = '';
+                }
+                if (res.data.off[i] === undefined) {
+                    res.data.off[i] = '';
+                }
+                $('tbody').append
+                ('<tr id="data_tr" style="overflow: hidden">' +
+                    ' <td style="text-align: center">' + res.data.time[i] + '</td>' +
+                    ' <td style="text-align: center">' + res.data.sao[i] + '</td>' +
+                    ' <td style="text-align: center">' + res.data.on[i] + '</td>' +
+                    ' <td style="text-align: center">' + res.data.off[i] + '</td>' +
+                    ' </tr>'
+                );
+            }
+            myChart.setOption(option);
+
+        }
+        $(function () {
+            if('{$get.type}' > 0){
+                var type='{$get.type}';
+                var id='{$get.id}';
+                $.post('position',{type:type,id:id}, function (res) {
+                    display(res);
+                })
+            }else {
+                $.post('position', function (res) {
+                    display(res);
+                })
+            }
+
+        });
+
+        function charts(as, key) {
+            if (key === 0) {
+                $(".nav-pills li").removeClass("active");
+                $(as).addClass("active");
+            } else if (key === 1) {
+                $(".nav-pills li").removeClass("active");
+                $(as).addClass("active");
+            } else if (key === 2) {
+                $(".nav-pills li").removeClass("active");
+                $(as).addClass("active");
+            } else if (key === 3) {
+                $(".nav-pills li").removeClass("active");
+                $(as).addClass("active");
+            }
+            $.post('position', {key: key}, function (res) {
+                display(res);
+            })
+        }
+
+
+    </script>
+</block>

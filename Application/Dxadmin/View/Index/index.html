@@ -1,0 +1,72 @@
+<extend name="Public:base"/>
+<block name="title">admin</block>
+<block name="body">
+
+    <style>
+        .innerbox::-webkit-scrollbar {
+            display: none
+        }
+
+        .innerbox {
+            overflow-y: scroll;
+        }
+        .innerbox::-webkit-scrollbar { /*滚动条整体样式*/
+            width: 10px; /*高宽分别对应横竖滚动条的尺寸*/
+            height: 1px;
+        }
+
+        .innerbox div {
+            display: block;
+            height: 110vh;
+        }
+    </style>
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div style="width: 200px;height: 70px;overflow: hidden;float: left">
+            <img src="/Public/lib/img/logo.png" width="100%" height="100%">
+        </div>
+        <div style="height: 70px;float: right;border-left: solid #e2e2e2 1px; ">
+            <a href="../Logout/index"><span class="glyphicon glyphicon-log-out" style="font-size: 30px;color: #e2e2e2;margin: 20px;" aria-hidden="true"></span></a>
+        </div>
+        <div style="height: 30px;float: right;margin: 20px;font-size: 14px">
+            {$user}
+        </div>
+    </nav>
+
+
+    <div id="body" class="innerbox" style="width: 200px;height: calc(100% - 70px);background: #f5f5f5;margin-top: 70px;">
+        <div id="tree" style="width: 100%;height: calc(100vh - 71px);"></div>
+    </div>
+
+
+    <div id="subject" style="width: calc(100% - 200px);height: calc(100% - 80px);position: absolute;top:70px;right: 0;">
+        <iframe src="../Journal/index" style="width: 100%;height: 100%;border: solid white 0;"></iframe>
+    </div>
+    <script>
+        $(function () {
+            $.post(
+                'index?type=1',
+                function (res) {
+                    var options = {
+                        data: res, //data属性是必须的，是一个对象数组    Array of Objects.
+                        showBorder: false, //是否在节点周围显示边框
+                    };
+                    $('#tree').treeview(options);
+                }
+            );
+        });
+
+        function treeClick(isThis) {
+            var id = $(isThis).attr('id');
+            if (id != 'NaN') {
+                $.post(
+                    'index?type=2',
+                    {id: id},
+                    function (res) {
+                        $('iframe').attr('src', '../' + res);
+                    }
+                )
+            }
+        }
+    </script>
+</block>

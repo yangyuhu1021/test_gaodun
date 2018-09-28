@@ -1,0 +1,375 @@
+<extend name="Public:base"/>
+
+<block name="body">
+    <style type="text/css">
+
+        #body {
+            width: 95%;
+            background: white;
+            border-radius: 10px;
+            margin: 2.5%;
+            position: relative;
+        }
+
+        .add_button {
+            margin: 20px 2.5%;
+            height: 40px;
+            width: 80px;
+        }
+
+        .btn-default {
+            color: #fff;
+            background-image: none;
+            background-color: rgba(255, 150, 47, 1);
+            border: none;
+        }
+
+        .btn-default:focus, .btn-default:hover {
+            color: #fff;
+            background-image: none;
+            border: none;
+            background-color: rgba(255, 150, 47, 1);
+        }
+
+        #data_tr > td > span {
+            margin: 5px;
+            color: #00aaee;
+            cursor: pointer;
+        }
+
+        thead > tr > th {
+            text-align: center;
+        }
+
+        #data_tr > td {
+            text-align: center;
+        }
+
+    </style>
+    <div id="body">
+        <button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-default add_button ">添加</button>
+        <!-- 模态框（Modal） -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">添加</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form action="" enctype="multipart/form-data" onsubmit="return false">
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon">成员账号</span>
+                                <input type="text" class="form-control" id="user" aria-describedby="sizing-addon1">
+                            </div>
+                            <br/>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon">成员姓名</span>
+                                <input type="text" class="form-control" id="name" aria-describedby="sizing-addon1">
+                            </div>
+                            <br/>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon">所属部门</span>
+                                <select class="selectpicker" id="department" style="width: 100%;height: 50px">
+                                    <volist name="select" id="vo">
+                                        <option value="{$vo.id}">{$vo.name}</option>
+                                    </volist>
+                                </select>
+                            </div>
+                            <br/>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon">登录密码</span>
+                                <input type="password" class="form-control" id="pwd" aria-describedby="sizing-addon1">
+                            </div>
+                            <br/>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon">确认密码</span>
+                                <input type="password" class="form-control" id="is_pwd"
+                                       aria-describedby="sizing-addon1">
+                            </div>
+
+                            <p style="text-align: center">
+                                <button type="button" data-dismiss="modal" class="btn add_button ">取消</button>
+                                <button type="button" id="add" class="btn btn-default add_button ">添加</button>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="position: absolute;right: 330px;top:20px;">
+            <input type="text" id="like_name" class="form-control top_input_button" style="width: 150px;height: 43px;"
+                   placeholder="成员姓名" aria-describedby="sizing-addon1">
+        </div>
+        <div style="position: absolute;right: 115px;top:20px;">
+            部门： <select class="selectpicker" id="like_department" title="选择部门" style="width: 150px;height: 43px">
+            <volist name="select" id="vo">
+                <option value="{$vo.id}">{$vo.name}</option>
+            </volist>
+        </select>
+
+        </div>
+
+        <div style="position: absolute;right: 20px;top:0">
+            <button type="button" id="like" class="btn btn-default  add_button" style="width: 60px">查询</button>
+        </div>
+
+        <div class="row" style="margin: auto;width: 97%">
+            <div class="col-xs-12">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th>成员账号</th>
+                        <th>姓名</th>
+                        <th>所属部门</th>
+                        <th>添加时间</th>
+                        <th>最后登录</th>
+                        <th>是否启用</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <volist name="data" id="vo">
+                        <tr id="data_tr" style="overflow: hidden">
+                            <td>{$vo.user}</td>
+                            <td>{$vo.name}</td>
+                            <td>
+                                <if condition="$vo['did']==='0'">
+                                    <else/>
+                                    {$vo.department}
+                                </if>
+                            </td>
+                            <td>{$vo.time}</td>
+                            <td>{$vo.logintime}</td>
+                            <td>
+                                <if condition="$vo['did']==='0'">无法对超级管理员进行此操作
+                                    <else/>
+                                    <php>echo $vo['type']=='1'?'<span
+                                            onclick="type('.$vo['uid'].','.$vo['type'].')">关闭</span>':'<span
+                                            onclick="type('.$vo['uid'].','.$vo['type'].')">启用</span>';
+                                    </php>
+                                </if>
+                            </td>
+                            <td>
+                                <if condition="$vo['did']==='0'">无法对超级管理员进行此操作
+                                    <else/>
+                                    <span onclick="edit('{$vo.uid}','select')">编辑</span><span
+                                            onclick="edit('{$vo.uid}','del')">删除</span>
+                                </if>
+                            </td>
+                        </tr>
+                    </volist>
+                    </tbody>
+                </table>
+                {$page}
+                <!-- PAGE CONTENT ENDS -->
+            </div><!-- /.col -->
+        </div>
+    </div>
+
+    <script>
+        $('#add').click(function () {
+            var user = $('#user').val();
+            var name = $('#name').val();
+            var department = $('#department').val();
+            var pwd = $('#pwd').val();
+            var is_pwd = $('#is_pwd').val();
+            if (user !== '' && name !== '' && department !== '' && pwd !== '' && is_pwd !== '') {
+                if (pwd === is_pwd) {
+                    $.post('user', {
+                        user: user,
+                        name: name,
+                        did: department,
+                        password: pwd,
+                        key: 'add'
+                    }, function (res) {
+                        if (res.code) {
+                            bootbox.alert({
+                                title: '系统提示',
+                                message: res.msg
+                            });
+                            setTimeout(function () {
+                                window.location.reload()
+                            }, 2000)
+                        } else {
+                            bootbox.alert({
+                                title: '系统提示',
+                                message: res.msg
+                            })
+                        }
+                    })
+                } else {
+                    bootbox.alert({
+                        title: '系统提示',
+                        message: '两次输入的密码不一致'
+                    })
+                }
+            } else {
+                bootbox.alert({
+                    title: '系统提示',
+                    message: '请输入完整信息'
+                })
+            }
+        });
+        function edit(id, event) {
+            if (event === 'select') {
+                $.post('user', {id: id, key: event}, function (res) {
+                        arr=res.d;
+                        var str='';
+                        for (i=0;i<arr.length;i++){
+                            if(arr[i]['id'] === res.data.did){
+                                str+='<option selected value="'+arr[i]['id']+'">'+arr[i]['name']+'</option>';
+                            }else {
+                                str+='<option value="'+arr[i]['id']+'">'+arr[i]['name']+'</option>';
+                            }
+                        }
+                    bootbox.dialog({
+                        message: '<div class="input-group input-group-lg">' +
+                            '<span class="input-group-addon">成员账号</span>' +
+                            '<input type="text" class="form-control" id="edit_user" value="' + res.data.user + '" aria-describedby="sizing-addon1">' +
+                            '</div>' +
+                            '<br/>' +
+                            '<div class="input-group input-group-lg">' +
+                            '<span class="input-group-addon">成员姓名</span>' +
+                            '<input type="text" class="form-control" id="edit_name" value="' + res.data.name + '" aria-describedby="sizing-addon1">' +
+                            '</div>' +
+                            '<br/>' +
+                            '<div class="input-group input-group-lg">' +
+                            '<span class="input-group-addon">所属部门</span>' +
+                            '<select class="selectpicker" id="edit_department"  style="width: 100%;height: 50px">' + str+
+                            '</select>' +
+                            '</div>' +
+                            '<br/>' +
+                            '<div class="input-group input-group-lg">' +
+                            '<span class="input-group-addon">登录密码</span>' +
+                            '<input type="password" class="form-control" id="edit_pwd" aria-describedby="sizing-addon1">' +
+                            '</div>' +
+                            '<br/>' +
+                            '<div class="input-group input-group-lg">' +
+                            '<span class="input-group-addon">确认密码</span>' +
+                            '<input type="password" class="form-control" id="edit_is_pwd" aria-describedby="sizing-addon1">' +
+                            '</div>',
+                        title: "编辑",
+                        buttons: {
+                            success: {
+                                label: "关闭",
+                                className: "btn-danger",
+                                callback: function () {
+                                }
+                            },
+                            "Danger": {
+                                label: "确认",
+                                className: "btn-success",
+                                callback: function () {
+                                    var user = $('#edit_user').val();
+                                    var name = $('#edit_name').val();
+                                    var department = $('#edit_department').val();
+                                    var pwd = $('#edit_pwd').val();
+                                    var is_pwd = $('#edit_is_pwd').val();
+                                    if (user !== '' && name !== '' && department !== '' && pwd !== '' && is_pwd !== '') {
+                                        if (pwd === is_pwd) {
+                                            $.post('user', {
+                                                id: id,
+                                                user: user,
+                                                name: name,
+                                                did: department,
+                                                password: pwd,
+                                                key: 'edit'
+                                            }, function (res) {
+                                                if (res.code) {
+                                                    bootbox.alert({
+                                                        title: '系统提示',
+                                                        message: res.msg
+                                                    });
+                                                    setTimeout(function () {
+                                                        window.location.reload()
+                                                    }, 2000)
+                                                } else {
+                                                    bootbox.alert({
+                                                        title: '系统提示',
+                                                        message: res.msg
+                                                    })
+                                                }
+                                            })
+                                        } else {
+                                            bootbox.alert({
+                                                title: '系统提示',
+                                                message: '两次输入的密码不一致'
+                                            })
+                                        }
+                                    } else {
+                                        bootbox.alert({
+                                            title: '系统提示',
+                                            message: '请输入完整信息'
+                                        })
+                                    }
+                                }
+                            }
+                        }
+                    });
+                })
+            } else if (event === 'del') {
+                bootbox.dialog({
+                    message: '是否删除',
+                    title: "系统提示",
+                    buttons: {
+                        success: {
+                            label: "关闭",
+                            className: "btn-danger",
+                            callback: function () {
+                            }
+                        },
+                        "Danger": {
+                            label: "确认",
+                            className: "btn-success",
+                            callback: function () {
+                                $.post('user', {id: id, key: event}, function (res) {
+                                    if (res.code) {
+                                        bootbox.alert({
+                                            title: '系统提示',
+                                            message: res.msg
+                                        });
+                                        setTimeout(function () {
+                                            window.location.reload()
+                                        }, 2000)
+                                    } else {
+                                        bootbox.alert({
+                                            title: '系统提示',
+                                            message: res.msg
+                                        })
+                                    }
+                                })
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        function type(id, type) {
+            $.post('user', {id: id, key: 'type', type: type}, function (res) {
+                if (res.code) {
+                    bootbox.alert({
+                        title: '系统提示',
+                        message: res.msg
+                    });
+                    setTimeout(function () {
+                        window.location.reload()
+                    }, 2000)
+                } else {
+                    bootbox.alert({
+                        title: '系统提示',
+                        message: res.msg
+                    })
+                }
+            })
+        }
+
+        $('#like').click(function () {
+            var name=$('#like_name').val();
+            var department=$('#like_department').val();
+            window.location.href='user?name='+name+'&d='+department;
+        })
+    </script>
+
+</block>

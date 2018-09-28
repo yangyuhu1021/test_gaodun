@@ -1,0 +1,115 @@
+<extend name="Public:base"/>
+<block name="body">
+	<style type="text/css">
+		#body {
+			width: 95%;
+			min-width: 1000px;
+			margin: 2.5%;
+			background: white;
+			border-radius: 10px;
+			overflow: hidden;
+
+		}
+		#body > div{
+			width: 35%;
+			margin-left: 5%;
+			font-size: 15px;
+			float: left;
+		}
+		input{
+			margin-top: 10px;
+			height: 50px;
+			width: 460px;
+		}
+		.input_radio > input{
+			margin-left: 10px;
+		}
+		textarea{
+			margin-top:20px;
+			resize: none;
+			width: 460px;
+			height: 120px;
+		}
+		.btn-default{
+			color: #fff;
+			background-image: none;
+			background-color: rgba(255,150,47,1);
+			border: none;
+		}
+		.btn-default:focus, .btn-default:hover{
+			color: #fff;
+			background-image: none;
+			border: none;
+			background-color: rgba(255,150,47,1);
+		}
+		#tiShi{
+			width: 460px;
+			word-break:normal;
+			margin-left: 10px;
+			font-size: 12px;
+			color: #999999;
+		}
+		#right_code{
+			text-align: center;
+			width: 320px;
+			height:460px;
+			box-shadow: 0 2px 12px 0 rgba(190,190,190,0.40);
+			margin-top: 10px;
+			overflow: hidden;
+		}
+		#right_code > div{
+			margin-top: 65px;
+			font-size: 20px;
+		}
+	</style>
+	<h3 style="margin: 50px"><b>添加文章</b></h3>
+	<div id="body">
+		<div style="min-width: 475px;">
+			<form action="" method="post">
+				<div>
+					<label for="basic-url" style="margin-top: 50px"><span style="color:red;">*</span> 文章类目</label>
+					<select class="form-control" name="category_id" id="basic-category">
+						<volist name="categories" id="vo">
+							<option value="{$vo.id}">{$vo.name}</option>
+						</volist>
+					</select>
+				</div>
+				<div>
+					<label for="basic-url" style="margin-top: 50px"><span style="color:red;">*</span> 文章标题</label>
+					<input type="text" class="form-control" required name="title" id="basic-title" placeholder="请输入活码名称">
+				</div>
+				<div>
+					<label for="basic-url" style="margin-top: 50px"><span style="color:red;">*</span> 封面图</label>
+					<div>
+						{:UpImage("thumbnail",100,100,$thumbnail)}
+						<p>仅支持jpg、gif、png、bmp、jpeg，且小于1MB。</p>
+					</div>
+
+				</div>
+				<div>
+					<label for="basic-url" style="margin-top: 50px">文章作者</label>
+					<input type="text" class="form-control"  name="author" id="basic-author" placeholder="文章作者">
+				</div>
+				<div>
+					<label for="basic-url" style="margin-top: 50px">文章摘要</label>
+					<textarea class="form-control"  name="abstract" id="basic-abstract" style="height:100px" placeholder="文章摘要"></textarea>
+				</div>
+				<div id="textArea">
+					<label for="basic-url" style="margin-top: 50px"><span style="color:red;">*</span>文章详情</label>
+					<div type="text/plain" class="myEditor" onkeyup="Down(1)" id="content" style="width:500px;height:100px;"></div>
+				</div>
+				<div>
+					<label for="basic-url" style="margin-top: 50px">原文链接</label>
+					<input type="text" class="form-control" id="basic-url" name="url" placeholder="原文链接：http://">
+				</div>
+				<div class="input_radio">
+					<button type="submit" id="btn" class="btn btn-default add_button " style="width: 200px;height:48px;margin: 50px 0;">保存</button>
+				</div>
+
+			</form>
+		</div>
+	</div>
+	<script>
+		var umTop = UM.getEditor('content');
+	</script>
+</block>

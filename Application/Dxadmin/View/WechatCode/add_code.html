@@ -1,0 +1,190 @@
+<extend name="Public:base"/>
+<block name="body">
+    <style type="text/css">
+        #body {
+            width: 95%;
+            min-width: 1000px;
+            margin: 2.5%;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+
+        }
+        #body > div{
+            width: 35%;
+            margin-left: 5%;
+            font-size: 15px;
+            float: left;
+        }
+        #basic-url{
+            margin-top: 10px;
+            height: 50px;
+            width: 460px;
+        }
+        .input_radio > input{
+            margin-left: 10px;
+        }
+        textarea{
+            margin-top:20px;
+            resize: none;
+            width: 460px;
+            height: 120px;
+        }
+        .btn-default{
+            color: #fff;
+            background-image: none;
+            background-color: rgba(255,150,47,1);
+            border: none;
+        }
+        .btn-default:focus, .btn-default:hover{
+            color: #fff;
+            background-image: none;
+            border: none;
+            background-color: rgba(255,150,47,1);
+        }
+        #tiShi{
+            width: 460px;
+            word-break:normal;
+            margin-left: 10px;
+            font-size: 12px;
+            color: #999999;
+        }
+        #right_code{
+            text-align: center;
+            width: 320px;
+            height:460px;
+            box-shadow: 0 2px 12px 0 rgba(190,190,190,0.40);
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        #right_code > div{
+            margin-top: 65px;
+            font-size: 20px;
+        }
+    </style>
+    <h3 style="margin: 50px"><b>添加活码项目</b></h3>
+    <div id="body">
+        <div style="min-width: 475px;">
+            <div>
+                <label for="basic-url" style="margin-top: 50px"><span style="color:red;">*</span> 活码名称</label>
+                <input type="text" class="form-control" id="basic-url" placeholder="请输入活码名称" aria-describedby="basic-addon3">
+            </div>
+
+            <div class="input_radio">
+                <label for="basic-url" style="margin-top: 50px"><span style="color:red;">*</span> 是否有引导语</label>
+                <input class="words" type="radio" value="1" name="ON" checked="">是</input>
+                <input class="words" type="radio" value="0" name="ON">否</input>
+            </div>
+            <div id="textArea">
+                <div type="text/plain" class="myEditor" onkeyup="Down(1)" id="myEditorTop" style="width:500px;height:100px;"></div><br/>
+                <div type="text/plain" class="myEditor" onkeyup="Down(2)" id="myEditorBottom" style="width:500px;height:100px;"></div>
+            </div>
+            <div class="input_radio">
+                <label for="basic-url" style="margin-top: 50px"><span style="color:red;">*</span> 安全设置</label>
+                <input class="security" type="radio" value="1" name="OFF" checked="">是</input>
+                <input class="security" type="radio" value="0" name="OFF">否</input>
+                <div id="tiShi">安全设置指用户第一次长按识别二维码加好友，系统会自动绑定，该用户将无法看到其他微信号的二维码</div>
+            </div>
+            <div class="input_radio">
+                <button type="button" id="btn" class="btn btn-default add_button " style="width: 200px;height:48px;margin: 50px 0;">保存</button>
+            </div>
+        </div>
+
+        <div>
+            <div style="margin-top: 135px;width: 100%;"><b>预览</b></div>
+            <div id="right_code">
+                <div class="code_text" id="top_code">上方引导语</div>
+                <div style="width: 160px;height: 160px;margin: 50px auto;">
+                    <img src="{$imgUrl}" alt="" width="100%" height="100%">
+                </div>
+                <div class="code_text" id="bottom_code">下方引导语</div>
+            </div>
+            <p style="margin-top: 20px;font-size: 12px">链接:
+                <span >{$url}</span>
+                <input type="text" id="copy_url" readonly value="{$url}" style="width: 1px;height: 1px;border: solid white 0;">
+                <span style="color:#397DE9 " onclick="copyText()"> 点击复制</span>
+            </p>
+        </div>
+
+    </div>
+    <script>
+        var umTop = UM.getEditor('myEditorTop');
+        var umBottom = UM.getEditor('myEditorBottom');
+
+        function getContent(id) {
+            var arr = [];
+            arr.push(UM.getEditor(id).getContent());
+            return arr.join("\n");
+        }
+        function copyText() {
+            url=document.getElementById("copy_url");
+            url.select(); // 选择对象
+            document.execCommand("Copy"); // 执行浏览器复制命令
+            bootbox.alert("复制成功", function () {
+                var strResult = "";
+            });
+        }
+        $('.words').click(function () {
+            wordsVal = $("input[name='ON']:checked").val();
+            if(wordsVal == '0'){
+                $('#textArea').css({
+                    'width':'0',
+                    'height':'0',
+                    'overflow':'hidden'
+                });
+                $('#bottom_code').text('');
+                $('#top_code').text('')
+            }else {
+                location.reload();
+            }
+        });
+        function Down(key) {
+            if(key == 1){
+                $('#top_code').text('');
+                $('.top_code').remove();
+                $('#top_code').append( getContent('myEditorTop'));
+
+            }else if(key == 2){
+                $('#bottom_code').text('');
+                $('.top_code').remove();
+                $('#bottom_code').append( getContent('myEditorBottom'));
+            }
+            if(getContent('myEditorTop') == '' && getContent('myEditorBottom') == ''){
+                $('.myEditor').css('display','block');
+                $('#bottom_code').text('上方引导语');
+                $('#top_code').text('下方引导语')
+            }
+        }
+        $('#btn').click(function () {
+            var name=$('#basic-url').val();
+            var security=$("input[name='OFF']:checked").val();
+            var textArea1='';
+            var textArea2='';
+
+            if($("input[name='ON']:checked").val() == '1'){
+                textArea1=getContent('myEditorTop');
+                textArea2=getContent('myEditorBottom');
+                if(textArea1 == '' && textArea2== ''){
+                    bootbox.alert("请输入引导词");
+                    return false;
+                }
+            }
+            if(name == ''){
+                bootbox.alert("请输入项目名称");
+                return false;
+            }
+
+
+            $.post('add_code', {name:name, img:'{$imgUrl}', type:'{$type}', key: security, top_code:textArea1, bottom_code:textArea2}, function (res){
+                    if(res.code){
+                        bootbox.alert(res.msg,function () {
+                            window.location.reload();
+                        });
+
+                    }
+                }
+            )
+
+        });
+    </script>
+</block>

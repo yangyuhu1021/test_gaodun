@@ -1,0 +1,225 @@
+<extend name="Public:base"/>
+<block name="body">
+	<style type="text/css">
+		#body {
+			width: 95%;
+			min-width: 1000px;
+			margin: 2.5%;
+			background: white;
+			border-radius: 10px;
+			overflow: hidden;
+		}
+		#body > div{
+			width: 500px;
+			margin-left: 5%;
+			font-size: 15px;
+			float: left;
+		}
+		#basic-url{
+			margin-top: 10px;
+			height: 50px;
+			width: 460px;
+		}
+		.input_radio > input{
+			margin-left: 10px;
+		}
+		textarea{
+			margin-top:20px;
+			resize: none;
+			width: 460px;
+			height: 120px;
+		}
+		#tiShi{
+			width: 460px;
+			word-break:normal;
+			margin-left: 10px;
+			font-size: 12px;
+			color: #999999;
+		}
+		#right_code{
+			text-align: center;
+			width: 320px;
+			height:460px;
+			box-shadow: 0 2px 12px 0 rgba(190,190,190,0.40);
+			margin-top: 10px;
+			overflow: hidden;
+		}
+		#right_code > div{
+			margin-top: 65px;
+			font-size: 20px;
+		}
+	</style>
+	<h3 style="margin: 50px"><b>添加活码项目</b></h3>
+	<div id="body">
+		<div style="min-width: 475px;">
+			<form action="" method="post">
+				<div>
+					<label for="basic-url" style="margin-top: 50px"><span style="color:red;">*</span> 文章类目</label>
+					<select class="form-control" name="category_id" id="basic-category">
+						<volist name="categories" id="vo">
+							<option value="{$vo.id}">{$vo.name}</option>
+						</volist>
+					</select>
+				</div>
+				<div>
+					<label for="basic-url" style="margin-top: 50px"><span style="color:red;">*</span> 文章标题</label>
+					<input type="text" class="form-control" required name="title" id="basic-title"
+						   value="{$info.title}" placeholder="请输入活码名称">
+				</div>
+				<div>
+					<label for="basic-url" style="margin-top: 50px"><span style="color:red;">*</span> 封面图</label>
+					<div>
+						{:UpImage("thumbnail",100,100,$info['thumbnail'])}
+						<p>仅支持jpg、gif、png、bmp、jpeg，且小于1MB。</p>
+					</div>
+
+				</div>
+				<div>
+					<label for="basic-url" style="margin-top: 50px">文章作者</label>
+					<input type="text" class="form-control" required name="author" id="basic-author"
+						   value="{$info.author}" placeholder="文章作者">
+				</div>
+				<div>
+					<label for="basic-url" style="margin-top: 50px">文章摘要</label>
+					<textarea class="form-control" required name="abstract"
+							  id="basic-abstract" style="height:100px" placeholder="文章摘要">{$info.abstract}</textarea>
+				</div>
+				<div id="textArea">
+					<label for="basic-url" style="margin-top: 50px"><span style="color:red;">*</span>文章详情</label>
+					<div type="text/plain" class="myEditor" onkeyup="Down(1)" id="content" style="width:500px;height:100px;">{$info.content}</div>
+				</div>
+				<div>
+					<label for="basic-url" style="margin-top: 50px">原文链接</label>
+					<input type="text" class="form-control" id="basic-url" name="url"
+						   value="{$info.url}" placeholder="原文链接：http://">
+				</div>
+				<div class="input_radio">
+					<input type="hidden" name="id" value="{$info.id}">
+					<button type="submit" id="btn" class="btn btn-default add_button " style="width: 200px;height:48px;margin: 50px 0;">保存</button>
+				</div>
+
+			</form>
+		</div>
+
+		<div>
+			<div style="margin-top: 135px;width: 100%;"><b>预览</b></div>
+			<div id="right_code">
+				<div><b id="top_code">上方引导语</b></div>
+				<div style="width: 160px;height: 160px;margin: 50px auto;">
+					<img src="{$data.img}" alt="" width="100%" height="100%">
+				</div>
+				<div><b id="bottom_code">下方引导语</b></div>
+			</div>
+			<p style="margin-top: 20px;font-size: 12px">链接:
+				<span >{$url}</span>
+				<input type="text" id="copy_url" readonly value="{$url}" style="width: 1px;height: 1px;border: solid white 0;">
+				<span style="color:#397DE9 " onclick="copyText()"> 点击复制</span>
+			</p>
+		</div>
+
+	</div>
+	<script>
+        $(function () {
+            var umTop = UM.getEditor('content');
+            if($('#textArea1').val() != ''){
+                $('#textArea2').css({
+                    'width':'0',
+                    'height':'0',
+                    'display':'none'
+                });
+                $('#top_code').text($('#textArea1').val());
+                $('#bottom_code').text('')
+            }else if($('#textArea2').val() != ''){
+                $('#textArea1').css({
+                    'width':'0',
+                    'height':'0',
+                    'display':'none'
+                });
+                $('#bottom_code').text($('#textArea2').val());
+                $('#top_code').text('')
+            }
+
+        });
+        function copyText() {
+            url=document.getElementById("copy_url");
+            url.select(); // 选择对象
+            document.execCommand("Copy"); // 执行浏览器复制命令
+            bootbox.alert("复制成功", function () {
+                var strResult = "";
+            });
+        }
+        $('.words').click(function () {
+            wordsVal = $("input[name='ON']:checked").val();
+            if(wordsVal == '0'){
+                $('#textArea').css({
+                    'width':'0',
+                    'height':'0',
+                    'overflow':'hidden'
+
+                });
+                $('#bottom_code').text('');
+                $('#top_code').text('')
+            }else {
+                location.reload();
+            }
+        });
+        function Down(key) {
+            if(key == 1){
+                $('#textArea2').css({
+                    'width':'0',
+                    'height':'0',
+                    'display':'none'
+                });
+                $('#top_code').text($('#textArea1').val());
+                $('#bottom_code').text('')
+            }else if(key == 2){
+                $('#textArea1').css({
+                    'width':'0',
+                    'height':'0',
+                    'display':'none'
+                });
+                $('#bottom_code').text($('#textArea2').val());
+                $('#top_code').text('')
+            }
+            if($('#textArea1').val() == '' && $('#textArea2').val() == ''){
+                $('textarea').css({
+                    'width':'460',
+                    'height':'120',
+                    'display':'block'
+                });
+                $('#bottom_code').text('上方引导语');
+                $('#top_code').text('下方引导语')
+            }
+        }
+        $('#btn').click(function () {
+            var name=$('#basic-url').val();
+            var security=$("input[name='OFF']:checked").val();
+            var textArea1='';
+            var textArea2='';
+
+            if($("input[name='ON']:checked").val() == '1'){
+                textArea1=$('#textArea1').val();
+                textArea2=$('#textArea2').val();
+                if(textArea1 == '' && textArea2== ''){
+                    bootbox.alert("请输入引导词");
+                    return false;
+                }
+            }
+            if(name == ''){
+                bootbox.alert("请输入项目名称");
+                return false;
+            }
+
+            $.post('edit_code?id={$data.id}', {name:name, img:'{$data.img}', type:'1', key: security, top_code:textArea1, bottom_code:textArea2}, function (res){
+                    if(res.code){
+                        bootbox.alert(res.msg,function () {
+                            window.location.reload();
+                        });
+
+                    }
+                }
+            )
+
+        });
+	</script>
+</block>

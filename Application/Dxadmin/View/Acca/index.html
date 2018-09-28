@@ -1,0 +1,140 @@
+<extend name="Public:base"/>
+
+<block name="body">
+    <style type="text/css">
+
+        #body {
+            width: 95%;
+            background: white;
+            border-radius: 10px;
+            margin: 2.5%;
+            position: relative;
+        }
+
+        tr > td > span {
+            margin: 5px;
+            color: #00aaee;
+        }
+
+        thead > tr > th {
+            text-align: center;
+        }
+
+        #data_tr > td {
+            text-align: center;
+        }
+
+        .like_sel {
+            float: left;
+            margin-left: 20px;
+        }
+    </style>
+    <div id="body">
+        <div style="margin-left:25px;overflow: hidden;position: relative;top: 30px;">
+            <div class="like_sel">
+                <input type="text" id="like_name" class="form-control top_input_button"
+                       style="width: 150px;height: 43px;"
+                       placeholder="姓名" aria-describedby="sizing-addon1">
+            </div>
+            <div class="like_sel">
+                <input type="text" id="like_phone" class="form-control top_input_button"
+                       style="width: 150px;height: 43px;"
+                       placeholder="手机号" aria-describedby="sizing-addon1">
+            </div>
+            <div class="like_sel">
+                <input type="text" id="like_email" class="form-control top_input_button"
+                       style="width: 150px;height: 43px;"
+                       placeholder="邮箱" aria-describedby="sizing-addon1">
+            </div>
+            <div class="like_sel">
+                提交渠道： <select class="selectpicker" id="like_type" title="提交渠道" style="width: 150px;height: 43px">
+                <option value="0">请选择</option>
+                <option value="必备资料">必备资料</option>
+                <option value="代理报名">代理报名</option>
+                <option value="学前评估">学前评估</option>
+                <option value="免考查询">免考查询</option>
+            </select>
+
+            </div>
+
+            <div class="like_sel">
+                <button type="button" id="like" class="btn btn-default  add_button" style="width: 60px">查询</button>
+            </div>
+        </div>
+        <div class="row" style="margin: 20px auto;width: 97%">
+            <div class="col-xs-12" style="margin-top: 40px;">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th>姓名</th>
+                        <th>手机号</th>
+                        <th>邮箱</th>
+                        <th>身份</th>
+                        <th>学历</th>
+                        <th>年级</th>
+                        <th>专业</th>
+                        <th>英语能力</th>
+                        <th>院校</th>
+                        <th>是否毕业</th>
+                        <th>提交渠道</th>
+                        <th>提交时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <volist name="data" id="vo">
+                        <tr id="data_tr">
+                            <td>
+                                <php>echo $vo['name']!=''?$vo['name']:'--';</php>
+                            </td>
+                            <td>
+                                <php>echo $vo['phone']!=''?$vo['phone']:'--';</php>
+                            </td>
+                            <td>{$vo.email}</td>
+                            <td>
+                                <php>echo $vo['identity']!=''?$vo['identity']:'--';</php>
+                            </td>
+                            <td>
+                                <php>echo $vo['education']!=''?$vo['education']:'--';</php>
+                            </td>
+                            <td>
+                                <php>echo $vo['grade']!=''?$vo['grade']:'--';</php>
+                            </td>
+                            <td>
+                                <php>echo $vo['major']!=''?$vo['major']:'--';</php>
+                            </td>
+                            <td>
+                                <php>echo $vo['english']!=''?$vo['english']:'--';</php>
+                            </td>
+                            <td>
+                                <php>echo $vo['school']!=''?$vo['school']:'--';</php>
+                            </td>
+                            <td>
+                                <php>echo $vo['graduation']!=''?$vo['graduation']:'--';</php>
+                            </td>
+                            <td>
+                                <php>echo $vo['type']!=''?$vo['type']:'--';</php>
+                            </td>
+                            <td>{$vo.time}</td>
+                            <td><a href="select.html?phone={$vo.phone}">查看所有记录</a></td>
+                        </tr>
+                    </volist>
+                    </tbody>
+                </table>
+                {$page}
+                <!-- PAGE CONTENT ENDS -->
+            </div><!-- /.col -->
+        </div>
+    </div>
+
+    <script>
+        $('#like').click(function () {
+            var name=$('#like_name').val();
+            var phone=$('#like_phone').val();
+            var email=$('#like_email').val();
+            var type=$('#like_type').val();
+            window.location.href='index?name='+name+'&phone='+phone+'&email='+email+'&type='+type;
+        })
+    </script>
+
+</block>

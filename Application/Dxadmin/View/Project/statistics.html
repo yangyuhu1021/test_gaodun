@@ -1,0 +1,147 @@
+<extend name="Public:base"/>
+<block name="body">
+    <style type="text/css">
+
+    </style>
+
+    <div style="width: 95%;background: white;margin:0 auto;border-radius: 10px;position: relative;top: 50px;">
+        <div style="height: 20px;"></div>
+        <ul class="nav nav-pills" style="margin-left: 30px;">
+            <li onclick="charts(this,0)" role="presentation" class="active"><a href="#">今日</a></li>
+            <li onclick="charts(this,1)" role="presentation"><a href="#">昨日</a></li>
+            <li onclick="charts(this,2)" role="presentation"><a href="#">最近7天</a></li>
+            <li onclick="charts(this,3)" role="presentation"><a href="#">最近30天</a></li>
+        </ul>
+        <div style="width: 120px;position: absolute; right:25%;top: 20px;">
+            <select id="is_code" class="form-control">
+                <option value="0">所有项目</option>
+                <volist name="data" id="vo">
+                    <option value="{$vo.id}">{$vo.name}</option>
+                </volist>
+            </select>
+        </div>
+
+        <div id="ECharts" style="width: 95%;height: 700px;margin: 2.5%"></div>
+
+    </div>
+
+    <script type="text/javascript">
+        var myChart = echarts.init(document.getElementById('ECharts'));
+        option = {
+            color: ['#FF8F21', '#1ECC85', '#BCBCBC'],
+            title: {
+                text: ''
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['资料', '视频', '总人数']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: ''
+            },
+            yAxis: {
+                type: 'value',
+                axisLine: {
+                    show: false,
+                    lineStyle: {
+                        width: 1,
+                        type: "solid"
+                    },
+                },
+            },
+            series: [
+
+                {
+                    name: '资料',
+                    type: 'line',
+                    data: '',
+                    symbolSize: 10,
+                    lineStyle: {
+                        width: 5 //default value:2
+                    }
+                },
+                {
+                    name: '视频',
+                    type: 'line',
+                    data: '',
+                    symbolSize: 10,
+                    lineStyle: {
+                        width: 5 //default value:2
+                    }
+                },
+                {
+                    name: '总人数',
+                    type: 'line',
+                    data: '',
+                    symbolSize: 10,
+                    lineStyle: {
+                        width: 5 //default value:2
+                    }
+                }
+            ]
+        };
+        function display(res){
+            option.title.text = res.title;
+            option.xAxis.data = res.time;
+            option.series[0].data = res.data;
+            option.series[1].data = res.video;
+            option.series[2].data = res.total;
+            myChart.setOption(option);
+
+        }
+        $("#is_code").change(function(){
+            key=$(this).val();
+            if(key === '0'){
+                $.post('statistics',{id:key,type:'type'}, function (res) {
+                    display(res);
+                })
+            }else {
+                $.post('statistics',{id:key,type:'type'}, function (res) {
+                    display(res);
+                })
+            }
+        });
+
+        $(function () {
+            $.post('statistics', function (res) {
+                display(res);
+            })
+
+        });
+
+        function charts(as, key) {
+            if (key === 0) {
+                $(".nav-pills li").removeClass("active");
+                $(as).addClass("active");
+            } else if (key === 1) {
+                $(".nav-pills li").removeClass("active");
+                $(as).addClass("active");
+            } else if (key === 2) {
+                $(".nav-pills li").removeClass("active");
+                $(as).addClass("active");
+            } else if (key === 3) {
+                $(".nav-pills li").removeClass("active");
+                $(as).addClass("active");
+            }
+            $.post('statistics', {key: key}, function (res) {
+                display(res);
+            })
+        }
+
+
+    </script>
+</block>
